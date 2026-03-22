@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RentEase — Premium Furniture & Appliance Rental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f1a;--bg2:#16162a;--bg3:#1e1e35;--card:#1a1a2e;
+  --border:rgba(255,255,255,0.08);--accent:#e8a045;--accent2:#f0c070;
+  --text:#f0ede8;--text2:#a8a5a0;--text3:#6b6870;
+  --success:#4ecb71;--error:#ff6b6b;--warning:#ffd166;
+  --radius:12px;--radius-lg:20px;--shadow:0 8px 32px rgba(0,0,0,0.4);
+  --font-display:'Playfair Display',serif;--font-body:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;line-height:1.2}
+h4,h5,h6{font-family:var(--font-body);font-weight:600}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--font-body);cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:var(--font-body);background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius);padding:12px 16px;font-size:14px;width:100%;transition:border-color 0.2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.2s;text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#1a1a00;font-weight:600}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-ghost{background:transparent;color:var(--text2)}
+.btn-ghost:hover{color:var(--text)}
+.btn-danger{background:rgba(255,107,107,0.15);color:var(--error);border:1px solid rgba(255,107,107,0.3)}
+.btn-sm{padding:8px 16px;font-size:13px}
+.btn-lg{padding:16px 32px;font-size:16px}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.badge-success{background:rgba(78,203,113,0.15);color:var(--success)}
+.badge-warning{background:rgba(255,209,102,0.15);color:var(--warning)}
+.badge-error{background:rgba(255,107,107,0.15);color:var(--error)}
+.badge-neutral{background:var(--bg3);color:var(--text2)}
+.badge-accent{background:rgba(232,160,69,0.15);color:var(--accent)}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.page{min-height:100vh;padding:88px 0 60px}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:60px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast-container{position:fixed;top:80px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);min-width:280px;animation:slideIn 0.3s ease}
+.toast-success{border-left:3px solid var(--success)}
+.toast-error{border-left:3px solid var(--error)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:none;opacity:1}}
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase}
+.empty-state{text-align:center;padding:80px 24px;color:var(--text2)}
+.empty-state .icon{font-size:64px;margin-bottom:16px;opacity:0.4;display:block}
+.empty-state h3{font-size:20px;color:var(--text);margin-bottom:8px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+@media(max-width:768px){
+  .hide-mobile{display:none!important}
+  .container{padding:0 16px}
+  .grid-3{grid-template-columns:1fr 1fr}
+  .hero-grid{grid-template-columns:1fr!important}
+  .checkout-grid{grid-template-columns:1fr!important}
+  .product-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:480px){.grid-3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useCallback,createContext,useContext,useRef} = React;
+
+// ─── DATA STORE ──────────────────────────────────────────────────────────────
+const PRODUCTS = [
+  {id:'p1',name:'Premium Sofa Set',category:'Furniture',description:'3+2 seater premium sofa set in leatherette finish. Comfortable and stylish for your living room.',image:'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600',price3:999,price6:899,price12:799,deposit:2000,featured:true,rating:4.5,reviews:128},
+  {id:'p2',name:'King Size Bed with Storage',category:'Furniture',description:'Spacious king size bed with hydraulic storage. Includes premium mattress.',image:'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600',price3:1299,price6:1099,price12:999,deposit:3000,featured:true,rating:4.7,reviews:95},
+  {id:'p3',name:'LG 1.5 Ton Split AC',category:'Appliances',description:'5-star rated inverter AC with auto-clean technology. Energy efficient cooling.',image:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600',price3:1499,price6:1299,price12:1199,deposit:3500,featured:true,rating:4.6,reviews:210},
+  {id:'p4',name:'Samsung 253L Refrigerator',category:'Appliances',description:'Double door frost-free refrigerator with digital inverter compressor.',image:'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=600',price3:999,price6:849,price12:749,deposit:2500,featured:false,rating:4.4,reviews:167},
+  {id:'p5',name:'Samsung 55" 4K Smart TV',category:'Electronics',description:'Crystal 4K UHD TV with HDR and smart features. Wall mount included.',image:'https://images.unsplash.com/photo-1593359677879-a4bb92f829e1?w=600',price3:1799,price6:1599,price12:1399,deposit:4000,featured:true,rating:4.8,reviews:312},
+  {id:'p6',name:'Fully Automatic Washing Machine',category:'Appliances',description:'7.5kg front load washing machine with 15 wash programs.',image:'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=600',price3:1199,price6:999,price12:899,deposit:3000,featured:false,rating:4.3,reviews:88},
+  {id:'p7',name:'Study Table & Chair Set',category:'Furniture',description:'Ergonomic study table with adjustable chair. Ideal for work from home.',image:'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600',price3:499,price6:449,price12:399,deposit:1000,featured:false,rating:4.2,reviews:54},
+  {id:'p8',name:'Dell Laptop - Inspiron 15',category:'Electronics',description:'Intel i5, 8GB RAM, 512GB SSD. Perfect for work and study.',image:'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600',price3:2499,price6:2199,price12:1999,deposit:5000,featured:true,rating:4.5,reviews:143},
+  {id:'p9',name:'Dining Table 6 Seater',category:'Furniture',description:'Solid wood 6-seater dining table with cushioned chairs.',image:'https://images.unsplash.com/photo-1615066831168-8d5dc4c1b5b2?w=600',price3:899,price6:799,price12:699,deposit:2000,featured:false,rating:4.1,reviews:37},
+  {id:'p10',name:'Microwave Oven 28L',category:'Appliances',description:'Convection microwave with grill function. 28L capacity.',image:'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=600',price3:599,price6:499,price12:449,deposit:1500,featured:false,rating:4.0,reviews:62},
+  {id:'p11',name:'Ergonomic Office Chair',category:'Furniture',description:'Mesh back ergonomic chair with lumbar support and armrests.',image:'https://images.unsplash.com/photo-1541558869434-2840d308329a?w=600',price3:399,price6:349,price12:299,deposit:800,featured:false,rating:4.4,reviews:91},
+  {id:'p12',name:'iPad Pro 11"',category:'Electronics',description:'M2 chip, 128GB, WiFi. Includes Apple Pencil and keyboard case.',image:'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600',price3:2999,price6:2699,price12:2399,deposit:6000,featured:false,rating:4.9,reviews:228},
+];
+
+let USERS = [{id:'admin-001',name:'Admin User',email:'admin@rentease.com',password:'password',role:'admin',phone:'9999999999',address:'RentEase HQ, Hyderabad'}];
+let RENTALS = [];
+let ORDERS = [];
+let MAINTENANCE = [];
+let CARTS = {};
+let prodList = [...PRODUCTS];
+const uid = () => Math.random().toString(36).substr(2,9);
+
+// ─── CONTEXTS ─────────────────────────────────────────────────────────────────
+const AuthCtx = createContext(null);
+const CartCtx = createContext(null);
+const ToastCtx = createContext(null);
+const NavCtx = createContext(null);
+
+function useAuth(){return useContext(AuthCtx)}
+function useCart(){return useContext(CartCtx)}
+function useToast(){return useContext(ToastCtx)}
+function useNav(){return useContext(NavCtx)}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function ToastProvider({children}){
+  const [toasts,setToasts]=useState([]);
+  const toast=(msg,type='success')=>{
+    const id=Date.now();
+    setToasts(p=>[...p,{id,msg,type}]);
+    setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),3500);
+  };
+  return <ToastCtx.Provider value={{toast}}>
+    {children}
+    <div className="toast-container">
+      {toasts.map(t=><div key={t.id} className={`toast toast-${t.type}`}>
+        <span>{t.type==='success'?'✓':'✕'}</span><span>{t.msg}</span>
+      </div>)}
+    </div>
+  </ToastCtx.Provider>;
+}
+
+// ─── AUTH PROVIDER ────────────────────────────────────────────────────────────
+function AuthProvider({children}){
+  const [user,setUser]=useState(()=>{try{return JSON.parse(localStorage.getItem('re_user'));}catch{return null;}});
+  const login=(email,password)=>{
+    const u=USERS.find(x=>x.email===email&&x.password===password);
+    if(!u) throw new Error('Invalid credentials');
+    localStorage.setItem('re_user',JSON.stringify(u));
+    setUser(u); return u;
+  };
+  const register=(data)=>{
+    if(USERS.find(u=>u.email===data.email)) throw new Error('Email already registered');
+    const u={id:uid(),...data,role:'user'};
+    USERS.push(u);
+    localStorage.setItem('re_user',JSON.stringify(u));
+    setUser(u); return u;
+  };
+  const logout=()=>{localStorage.removeItem('re_user');setUser(null);};
+  return <AuthCtx.Provider value={{user,login,register,logout,isAdmin:user?.role==='admin'}}>{children}</AuthCtx.Provider>;
+}
+
+// ─── CART PROVIDER ────────────────────────────────────────────────────────────
+function CartProvider({children}){
+  const {user}=useAuth();
+  const getCart=useCallback(()=>user?CARTS[user.id]||[]:,[user]);
+  const [cart,setCart]=useState(getCart);
+  useEffect(()=>setCart(getCart()),[user]);
+  const refresh=()=>setCart(user?[...(CARTS[user.id]||[])]:[]); 
+  const addToCart=(productId,tenure)=>{
+    if(!user) return;
+    if(!CARTS[user.id]) CARTS[user.id]=[];
+    const ex=CARTS[user.id].find(i=>i.productId===productId);
+    if(ex) ex.tenure=tenure; else CARTS[user.id].push({id:uid(),productId,tenure,qty:1});
+    refresh();
+  };
+  const removeFromCart=(itemId)=>{
+    if(!user) return;
+    CARTS[user.id]=(CARTS[user.id]||[]).filter(i=>i.id!==itemId);
+    refresh();
+  };
+  const updateItem=(itemId,data)=>{
+    if(!user) return;
+    const item=(CARTS[user.id]||[]).find(i=>i.id===itemId);
+    if(item) Object.assign(item,data);
+    refresh();
+  };
+  const clearCart=()=>{if(user){CARTS[user.id]=[];refresh();}};
+  const enriched=cart.map(i=>({...i,product:prodList.find(p=>p.id===i.productId)}));
+  const getTotal=()=>enriched.reduce((s,i)=>{if(!i.product) return s;return s+(i.product[`price${i.tenure}`]||0)*i.tenure;},0);
+  return <CartCtx.Provider value={{cart:enriched,cartCount:cart.length,addToCart,removeFromCart,updateItem,clearCart,getTotal,refresh}}>{children}</CartCtx.Provider>;
+}
+
+// ─── NAVBAR ───────────────────────────────────────────────────────────────────
+function Navbar(){
+  const {user,logout,isAdmin}=useAuth();
+  const {cartCount}=useCart();
+  const {navigate,page}=useNav();
+  const {toast}=useToast();
+  const [scrolled,setScrolled]=useState(false);
+  const [drop,setDrop]=useState(false);
+  const [mob,setMob]=useState(false);
+  useEffect(()=>{
+    const fn=()=>setScrolled(window.scrollY>20);
+    window.addEventListener('scroll',fn);return()=>window.removeEventListener('scroll',fn);
+  },[]);
+  const go=(p)=>{navigate(p);setDrop(false);setMob(false);};
+  const handleLogout=()=>{logout();toast('Logged out','success');go('home');};
+  return <nav style={{position:'fixed',top:0,left:0,right:0,zIndex:1000,background:scrolled?'rgba(15,15,26,0.96)':'transparent',backdropFilter:scrolled?'blur(20px)':'none',borderBottom:scrolled?'1px solid rgba(255,255,255,0.06)':'none',transition:'all 0.3s',padding:'0 24px'}}>
+    <div style={{maxWidth:1200,margin:'0 auto',display:'flex',alignItems:'center',justifyContent:'space-between',height:68}}>
+      <div onClick={()=>go('home')} style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}>
+        <div style={{width:36,height:36,background:'var(--accent)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,fontWeight:700,color:'#1a1a00'}}>R</div>
+        <span style={{fontFamily:'var(--font-display)',fontSize:22,fontWeight:700}}>Rent<span style={{color:'var(--accent)'}}>Ease</span></span>
+      </div>
+      <div className="hide-mobile" style={{display:'flex',alignItems:'center',gap:32,fontSize:14}}>
+        <span onClick={()=>go('products')} style={{color:'var(--text2)',cursor:'pointer',transition:'color 0.2s'}} onMouseEnter={e=>e.target.style.color='var(--text)'} onMouseLeave={e=>e.target.style.color='var(--text2)'}>Browse</span>
+        {user&&<span onClick={()=>go('rentals')} style={{color:'var(--text2)',cursor:'pointer'}} onMouseEnter={e=>e.target.style.color='var(--text)'} onMouseLeave={e=>e.target.style.color='var(--text2)'}>My Rentals</span>}
+        {isAdmin&&<span onClick={()=>go('admin')} style={{color:'var(--accent)',cursor:'pointer',fontSize:13,fontWeight:500}}>Admin</span>}
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:12}}>
+        {user?<>
+          <div onClick={()=>go('cart')} style={{position:'relative',width:40,height:40,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:'50%',background:'var(--bg3)',cursor:'pointer',fontSize:18}}>
+            🛒{cartCount>0&&<span style={{position:'absolute',top:-4,right:-4,width:18,height:18,background:'var(--accent)',borderRadius:'50%',fontSize:10,display:'flex',alignItems:'center',justifyContent:'center',color:'#1a1a00',fontWeight:700}}>{cartCount}</span>}
+          </div>
+          <div style={{position:'relative'}}>
+            <button onClick={()=>setDrop(!drop)} style={{display:'flex',alignItems:'center',gap:8,background:'var(--bg3)',border:'1px solid var(--border)',borderRadius:30,padding:'6px 14px 6px 6px',color:'var(--text)',cursor:'pointer'}}>
+              <div style={{width:28,height:28,borderRadius:'50%',background:'var(--accent)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,color:'#1a1a00'}}>{user.name?.[0]?.toUpperCase()}</div>
+              <span className="hide-mobile" style={{fontSize:13}}>{user.name?.split(' ')[0]}</span>
+              <span style={{fontSize:10}}>▾</span>
+            </button>
+            {drop&&<div style={{position:'absolute',right:0,top:'110%',background:'var(--card)',border:'1px solid var(--border)',borderRadius:12,padding:8,minWidth:180,boxShadow:'var(--shadow)',zIndex:100}}>
+              {[['📊 Dashboard','dashboard'],['📦 My Rentals','rentals'],['🔧 Support','maintenance']].map(([l,p])=>
+                <div key={p} onClick={()=>go(p)} style={{padding:'10px 14px',borderRadius:8,color:'var(--text2)',fontSize:14,cursor:'pointer',transition:'background 0.2s'}} onMouseEnter={e=>e.currentTarget.style.background='var(--bg3)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>{l}</div>
+              )}
+              <hr className="divider"/>
+              <div onClick={handleLogout} style={{padding:'10px 14px',borderRadius:8,color:'var(--error)',fontSize:14,cursor:'pointer'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,107,107,0.1)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>🚪 Logout</div>
+            </div>}
+          </div>
+        </>:<>
+          <button className="btn btn-ghost btn-sm hide-mobile" onClick={()=>go('login')}>Login</button>
+          <button className="btn btn-primary btn-sm" onClick={()=>go('register')}>Get Started</button>
+        </>}
+        <button onClick={()=>setMob(!mob)} style={{display:'none',background:'none',border:'none',color:'var(--text)',fontSize:22,cursor:'pointer'}} className="mob-btn">{mob?'✕':'☰'}</button>
+      </div>
+    </div>
+    {mob&&<div style={{background:'var(--card)',borderTop:'1px solid var(--border)',padding:16}}>
+      {[['Browse Products','products'],['My Rentals','rentals'],['Cart','cart'],['Dashboard','dashboard']].map(([l,p])=>
+        <div key={p} onClick={()=>go(p)} style={{padding:'12px 0',color:'var(--text)',borderBottom:'1px solid var(--border)',cursor:'pointer'}}>{l}</div>
+      )}
+      {user?<div onClick={handleLogout} style={{padding:'12px 0',color:'var(--error)',cursor:'pointer'}}>Logout</div>
+        :<div style={{display:'flex',gap:12,marginTop:12}}><button className="btn btn-outline" style={{flex:1}} onClick={()=>go('login')}>Login</button><button className="btn btn-primary" style={{flex:1}} onClick={()=>go('register')}>Register</button></div>}
+    </div>}
+    <style>{`@media(max-width:768px){.mob-btn{display:flex!important}}`}</style>
+  </nav>;
+}
+
+// ─── FOOTER ───────────────────────────────────────────────────────────────────
+function Footer(){
+  const {navigate}=useNav();
+  return <footer style={{background:'var(--bg2)',borderTop:'1px solid var(--border)',padding:'48px 24px 28px'}}>
+    <div style={{maxWidth:1200,margin:'0 auto'}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:40,marginBottom:40}}>
+        <div>
+          <div style={{fontFamily:'var(--font-display)',fontSize:24,fontWeight:700,marginBottom:12}}>Rent<span style={{color:'var(--accent)'}}>Ease</span></div>
+          <p style={{color:'var(--text2)',fontSize:13,lineHeight:1.7}}>Premium furniture & appliances on flexible monthly rental plans.</p>
+        </div>
+        <div>
+          <h5 style={{marginBottom:16,fontSize:12,textTransform:'uppercase',letterSpacing:1,color:'var(--text2)'}}>Products</h5>
+          {['Furniture','Appliances','Electronics'].map(c=><div key={c} onClick={()=>navigate('products',{category:c})} style={{color:'var(--text2)',fontSize:13,marginBottom:10,cursor:'pointer'}} onMouseEnter={e=>e.target.style.color='var(--accent)'} onMouseLeave={e=>e.target.style.color='var(--text2)'}>{c}</div>)}
+        </div>
+        <div>
+          <h5 style={{marginBottom:16,fontSize:12,textTransform:'uppercase',letterSpacing:1,color:'var(--text2)'}}>Why RentEase?</h5>
+          {['✓ Zero deposit stress','✓ Free delivery & setup','✓ 24/7 maintenance','✓ Flexible tenures'].map(i=><div key={i} style={{color:'var(--text2)',fontSize:13,marginBottom:10}}>{i}</div>)}
+        </div>
+      </div>
+      <div style={{borderTop:'1px solid var(--border)',paddingTop:24,display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
+        <p style={{color:'var(--text3)',fontSize:13}}>© 2024 RentEase. All rights reserved.</p>
+        <p style={{color:'var(--text3)',fontSize:13}}>Made with ♥ for comfortable living</p>
+      </div>
+    </div>
+  </footer>;
+}
+
+// ─── PRODUCT CARD ─────────────────────────────────────────────────────────────
+function ProductCard({p}){
+  const {navigate}=useNav();
+  const low=Math.min(p.price3,p.price6,p.price12);
+  const stars='★'.repeat(Math.floor(p.rating))+'☆'.repeat(5-Math.floor(p.rating));
+  return <div style={{background:'var(--card)',border:'1px solid var(--border)',borderRadius:'var(--radius-lg)',overflow:'hidden',cursor:'pointer',transition:'transform 0.2s,box-shadow 0.2s'}} onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-4px)';e.currentTarget.style.boxShadow='0 16px 48px rgba(0,0,0,0.4)'}} onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none'}}>
+    <div onClick={()=>navigate('product',{id:p.id})} style={{position:'relative',height:200,overflow:'hidden'}}>
+      <img src={p.image} alt={p.name} style={{width:'100%',height:'100%',objectFit:'cover',transition:'transform 0.3s'}} onMouseEnter={e=>e.target.style.transform='scale(1.05)'} onMouseLeave={e=>e.target.style.transform='scale(1)'}/>
+      <div style={{position:'absolute',top:12,left:12}}><span className="badge badge-accent">{p.category}</span></div>
+      {p.featured&&<div style={{position:'absolute',top:12,right:12}}><span className="badge" style={{background:'rgba(232,160,69,0.9)',color:'#1a1a00'}}>⭐ Featured</span></div>}
+    </div>
+    <div style={{padding:16}}>
+      <h3 onClick={()=>navigate('product',{id:p.id})} style={{fontSize:15,fontWeight:600,marginBottom:4,fontFamily:'var(--font-body)',color:'var(--text)'}}>{p.name}</h3>
+      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:12}}>
+        <span style={{color:'var(--accent)',fontSize:12}}>{stars.slice(0,5)}</span>
+        <span style={{fontSize:12,color:'var(--text3)'}}>({p.reviews})</span>
+      </div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div>
+          <div style={{fontSize:11,color:'var(--text3)',marginBottom:2}}>Starting from</div>
+          <div style={{fontSize:20,fontWeight:700,color:'var(--accent)'}}>₹{low}<span style={{fontSize:12,color:'var(--text3)',fontWeight:400}}>/mo</span></div>
+        </div>
+        <button className="btn btn-primary btn-sm" onClick={()=>navigate('product',{id:p.id})}>Rent Now</button>
+      </div>
+    </div>
+  </div>;
+}
+
+// ─── HOME PAGE ────────────────────────────────────────────────────────────────
+function Home(){
+  const {navigate}=useNav();
+  const featured=PRODUCTS.filter(p=>p.featured);
+  const stats=[{v:'10,000+',l:'Happy Customers'},{v:'500+',l:'Products'},{v:'50+',l:'Cities'},{v:'4.8★',l:'Rating'}];
+  const features=[{i:'🚚',t:'Free Delivery & Setup',d:'We deliver and set up everything. No extra charges.'},{i:'🔧',t:'24/7 Maintenance',d:'Free maintenance throughout your rental period.'},{i:'🔄',t:'Flexible Plans',d:'Rent for 3, 6, or 12 months. Extend anytime.'},{i:'💰',t:'Save Big',d:'Pay fraction of buying cost. Premium brands, low prices.'}];
+  return <div>
+    <section style={{minHeight:'100vh',display:'flex',alignItems:'center',background:'radial-gradient(ellipse at 60% 50%,rgba(232,160,69,0.08) 0%,transparent 60%),var(--bg)',padding:'100px 24px 60px',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:'10%',right:'5%',width:400,height:400,borderRadius:'50%',background:'radial-gradient(circle,rgba(232,160,69,0.06) 0%,transparent 70%)',pointerEvents:'none'}}/>
+      <div className="hero-grid" style={{maxWidth:1200,margin:'0 auto',display:'grid',gridTemplateColumns:'1fr 1fr',gap:60,alignItems:'center',width:'100%'}}>
+        <div style={{animation:'fadeInUp 0.8s ease'}}>
+          <div className="badge badge-accent" style={{marginBottom:20,fontSize:12}}>🏠 India's #1 Rental Platform</div>
+          <h1 style={{fontSize:'clamp(36px,5vw,60px)',lineHeight:1.1,marginBottom:20}}>Furnish Your<br/><span style={{color:'var(--accent)'}}>Dream Home</span><br/>Without Buying</h1>
+          <p style={{fontSize:17,color:'var(--text2)',lineHeight:1.7,marginBottom:36,maxWidth:480}}>Rent premium furniture & appliances on flexible monthly plans. Free delivery, free maintenance, zero hassle.</p>
+          <div style={{display:'flex',gap:16,flexWrap:'wrap'}}>
+            <button className="btn btn-primary btn-lg" onClick={()=>navigate('products')}>Browse Products →</button>
+            <button className="btn btn-outline btn-lg" onClick={()=>navigate('register')}>Get Started Free</button>
+          </div>
+          <div style={{display:'flex',gap:24,marginTop:40,flexWrap:'wrap'}}>
+            {['✅ No hidden fees','🔒 Secure payments','📦 Free setup'].map(t=><span key={t} style={{fontSize:13,color:'var(--text2)'}}>{t}</span>)}
+          </div>
+        </div>
+        <div className="hide-mobile" style={{position:'relative',display:'flex',justifyContent:'center'}}>
+          <div style={{width:'100%',maxWidth:440,height:380,borderRadius:24,background:'var(--card)',border:'1px solid var(--border)',overflow:'hidden',position:'relative'}}>
+            <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600" alt="Sofa" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+            <div style={{position:'absolute',bottom:20,left:20,right:20,background:'rgba(15,15,26,0.9)',backdropFilter:'blur(16px)',border:'1px solid var(--border)',borderRadius:14,padding:'14px 18px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div><div style={{fontSize:13,fontWeight:600}}>Premium Sofa Set</div><div style={{fontSize:12,color:'var(--text2)'}}>Starting ₹799/month</div></div>
+              <button className="btn btn-primary btn-sm" onClick={()=>navigate('product',{id:'p1'})}>Rent</button>
+            </div>
+          </div>
+          <div style={{position:'absolute',top:-20,right:-20,background:'var(--card)',border:'1px solid var(--border)',borderRadius:14,padding:'12px 16px',boxShadow:'var(--shadow)'}}>
+            <div style={{fontSize:11,color:'var(--text2)'}}>Monthly Savings</div>
+            <div style={{fontSize:20,fontWeight:700,color:'var(--success)'}}>₹4,200</div>
+            <div style={{fontSize:10,color:'var(--text3)'}}>vs buying</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section style={{background:'var(--bg2)',borderTop:'1px solid var(--border)',borderBottom:'1px solid var(--border)',padding:'40px 24px'}}>
+      <div style={{maxWidth:1200,margin:'0 auto',display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:24}}>
+        {stats.map(s=><div key={s.v} style={{textAlign:'center'}}><div style={{fontSize:28,fontWeight:700,fontFamily:'var(--font-display)',color:'var(--accent)'}}>{s.v}</div><div style={{fontSize:13,color:'var(--text2)',marginTop:4}}>{s.l}</div></div>)}
+      </div>
+    </section>
+    <section style={{padding:'80px 24px'}}>
+      <div style={{maxWidth:1200,margin:'0 auto'}}>
+        <h2 style={{textAlign:'center',fontSize:'clamp(24px,4vw,40px)',marginBottom:8}}>Shop by Category</h2>
+        <p style={{textAlign:'center',color:'var(--text2)',marginBottom:48}}>Everything you need for a comfortable home</p>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:20}}>
+          {[{n:'Furniture',i:'🛋️',d:'Sofas, beds, tables & more'},{n:'Appliances',i:'🌡️',d:'AC, fridge, washing machine'},{n:'Electronics',i:'📺',d:'TVs, laptops, tablets'}].map(c=>
+            <div key={c.n} onClick={()=>navigate('products',{category:c.n})} style={{background:'var(--card)',border:'1px solid var(--border)',borderRadius:'var(--radius-lg)',padding:32,textAlign:'center',cursor:'pointer',transition:'all 0.2s'}} onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--accent)';e.currentTarget.style.transform='translateY(-4px)'}} onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.transform='none'}}>
+              <div style={{fontSize:48,marginBottom:16}}>{c.i}</div>
+              <h3 style={{fontSize:20,marginBottom:8,fontFamily:'var(--font-body)',fontWeight:600}}>{c.n}</h3>
+              <p style={{color:'var(--text2)',fontSize:13}}>{c.d}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+    <section style={{padding:'0 24px 80px',background:'var(--bg2)'}}>
+      <div style={{maxWidth:1200,margin:'0 auto',paddingTop:60}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:40,flexWrap:'wrap',gap:16}}>
+          <div><h2 style={{fontSize:'clamp(24px,4vw,40px)',marginBottom:8}}>Featured Products</h2><p style={{color:'var(--text2)'}}>Hand-picked premium items</p></div>
+          <button className="btn btn-outline" onClick={()=>navigate('products')}>View All →</button>
+        </div>
+        <div className="grid-3">{featured.map(p=><ProductCard key={p.id} p={p}/>)}</div>
+      </div>
+    </section>
+    <section style={{padding:'80px 24px'}}>
+      <div style={{maxWidth:1200,margin:'0 auto'}}>
+        <h2 style={{textAlign:'center',fontSize:'clamp(24px,4vw,40px)',marginBottom:8}}>Why Choose RentEase?</h2>
+        <p style={{textAlign:'center',color:'var(--text2)',marginBottom:60}}>We take care of everything</p>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(250px,1fr))',gap:24}}>
+          {features.map(f=><div key={f.t} className="card" style={{textAlign:'center'}}><div style={{fontSize:40,marginBottom:16}}>{f.i}</div><h4 style={{marginBottom:10,fontSize:17}}>{f.t}</h4><p style={{color:'var(--text2)',fontSize:14,lineHeight:1.6}}>{f.d}</p></div>)}
+        </div>
+      </div>
+    </section>
+    <section style={{padding:'80px 24px',background:'linear-gradient(135deg,rgba(232,160,69,0.1) 0%,rgba(108,142,255,0.05) 100%)',borderTop:'1px solid var(--border)'}}>
+      <div style={{maxWidth:600,margin:'0 auto',textAlign:'center'}}>
+        <h2 style={{fontSize:'clamp(28px,4vw,44px)',marginBottom:16}}>Ready to Furnish Your Home?</h2>
+        <p style={{color:'var(--text2)',fontSize:16,marginBottom:36,lineHeight:1.7}}>Join 10,000+ happy customers living comfortably.</p>
+        <button className="btn btn-primary btn-lg" onClick={()=>navigate('register')}>Start Renting Today →</button>
+      </div>
+    </section>
+  </div>;
+}
+
+// ─── PRODUCTS PAGE ────────────────────────────────────────────────────────────
+function Products({params}){
+  const {navigate}=useNav();
+  const [search,setSearch]=useState('');
+  const [cat,setCat]=useState(params?.category||'');
+  const cats=['','Furniture','Appliances','Electronics'];
+  const filtered=prodList.filter(p=>{
+    if(cat&&p.category!==cat) return false;
+    if(search&&!p.name.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+  return <div className="page">
+    <div className="container">
+      <h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>Browse Products</h1>
+      <p style={{color:'var(--text2)',marginBottom:40}}>Rent premium items at the best prices</p>
+      <div style={{display:'flex',gap:16,marginBottom:32,flexWrap:'wrap',alignItems:'center'}}>
+        <div style={{flex:1,minWidth:220}}><input type="search" placeholder="🔍 Search products..." value={search} onChange={e=>setSearch(e.target.value)} style={{maxWidth:400}}/></div>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          {cats.map(c=><button key={c} onClick={()=>setCat(c)} className={`btn btn-sm ${cat===c?'btn-primary':'btn-outline'}`}>{c||'All'}</button>)}
+        </div>
+      </div>
+      <div style={{color:'var(--text2)',fontSize:14,marginBottom:24}}>{filtered.length} product{filtered.length!==1?'s':''} found</div>
+      {filtered.length===0?<div className="empty-state"><span className="icon">📦</span><h3>No Products Found</h3><p>Try adjusting your filters</p></div>
+        :<div className="grid-3">{filtered.map(p=><ProductCard key={p.id} p={p}/>)}</div>}
+    </div>
+  </div>;
+}
+
+// ─── PRODUCT DETAIL ───────────────────────────────────────────────────────────
+function ProductDetail({params}){
+  const {navigate}=useNav();
+  const {user}=useAuth();
+  const {addToCart}=useCart();
+  const {toast}=useToast();
+  const [tenure,setTenure]=useState(3);
+  const p=prodList.find(x=>x.id===params?.id);
+  if(!p) return <div className="page"><div className="container"><p>Product not found.</p></div></div>;
+  const monthly=p[`price${tenure}`];
+  const total=monthly*tenure;
+  const stars=Math.floor(p.rating);
+  const handleAdd=()=>{if(!user){navigate('login');return;}addToCart(p.id,tenure);toast('Added to cart! 🎉','success');};
+  const handleRent=()=>{if(!user){navigate('login');return;}addToCart(p.id,tenure);navigate('cart');};
+  return <div className="page">
+    <div className="container">
+      <span onClick={()=>navigate('products')} style={{color:'var(--text2)',fontSize:14,display:'inline-flex',alignItems:'center',gap:6,marginBottom:32,cursor:'pointer'}}>← Back to Products</span>
+      <div className="product-grid" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:48,alignItems:'start'}}>
+        <div style={{borderRadius:'var(--radius-lg)',overflow:'hidden',background:'var(--card)',border:'1px solid var(--border)',aspectRatio:'4/3'}}>
+          <img src={p.image} alt={p.name} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+        </div>
+        <div>
+          <span className="badge badge-accent" style={{marginBottom:16}}>{p.category}</span>
+          <h1 style={{fontSize:'clamp(22px,3vw,34px)',marginBottom:12}}>{p.name}</h1>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:20}}>
+            <span style={{color:'var(--accent)',fontSize:16}}>{'★'.repeat(stars)}{'☆'.repeat(5-stars)}</span>
+            <span style={{color:'var(--text2)',fontSize:14}}>{p.rating} ({p.reviews} reviews)</span>
+          </div>
+          <p style={{color:'var(--text2)',lineHeight:1.7,marginBottom:28,fontSize:15}}>{p.description}</p>
+          <div style={{marginBottom:28}}>
+            <div style={{fontSize:12,color:'var(--text2)',textTransform:'uppercase',letterSpacing:0.5,marginBottom:12,fontWeight:500}}>Select Rental Duration</div>
+            <div style={{display:'flex',gap:12}}>
+              {[[3,''],[6,'Save 10%'],[12,'Save 20%']].map(([t,disc])=>
+                <button key={t} onClick={()=>setTenure(t)} style={{flex:1,padding:'14px 12px',borderRadius:'var(--radius)',border:`2px solid ${tenure===t?'var(--accent)':'var(--border)'}`,background:tenure===t?'rgba(232,160,69,0.1)':'var(--bg3)',color:tenure===t?'var(--accent)':'var(--text)',cursor:'pointer',transition:'all 0.2s',textAlign:'center'}}>
+                  <div style={{fontWeight:600,fontSize:14}}>{t} Months</div>
+                  {disc&&<div style={{fontSize:11,color:'var(--success)',marginTop:4}}>{disc}</div>}
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="card" style={{marginBottom:24,padding:20}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end'}}>
+              <div><div style={{fontSize:12,color:'var(--text2)',marginBottom:4}}>Monthly Rent</div><div style={{fontSize:32,fontWeight:700,color:'var(--accent)'}}>₹{monthly}<span style={{fontSize:16,color:'var(--text2)',fontWeight:400}}>/mo</span></div></div>
+              <div style={{textAlign:'right'}}><div style={{fontSize:12,color:'var(--text2)',marginBottom:4}}>Total ({tenure} months)</div><div style={{fontSize:20,fontWeight:600}}>₹{total}</div></div>
+            </div>
+            <hr className="divider"/>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:13,color:'var(--text2)'}}><span>Refundable Deposit</span><span style={{color:'var(--text)',fontWeight:500}}>₹{p.deposit}</span></div>
+          </div>
+          <div style={{display:'flex',gap:12}}>
+            <button className="btn btn-outline" style={{flex:1}} onClick={handleAdd}>🛒 Add to Cart</button>
+            <button className="btn btn-primary" style={{flex:1}} onClick={handleRent}>Rent Now →</button>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginTop:24}}>
+            {['🚚 Free Delivery','🔧 Free Maintenance','🔄 Easy Return','📋 No EMI Stress'].map(x=><div key={x} style={{fontSize:13,color:'var(--text2)',background:'var(--bg3)',borderRadius:8,padding:'8px 12px'}}>{x}</div>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+function Login(){
+  const {login}=useAuth();const {navigate}=useNav();const {toast}=useToast();
+  const [form,setForm]=useState({email:'',password:''});
+  const [err,setErr]=useState('');const [loading,setLoading]=useState(false);
+  const submit=(e)=>{e.preventDefault();setErr('');setLoading(true);
+    try{const u=login(form.email,form.password);toast(`Welcome back, ${u.name}!`,'success');navigate(u.role==='admin'?'admin':'dashboard');}
+    catch(e){setErr(e.message);}finally{setLoading(false);}
+  };
+  return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',padding:'80px 24px',background:'radial-gradient(ellipse at center,rgba(232,160,69,0.05) 0%,transparent 70%)'}}>
+    <div style={{width:'100%',maxWidth:420}}>
+      <div style={{textAlign:'center',marginBottom:40}}>
+        <div style={{fontFamily:'var(--font-display)',fontSize:32,fontWeight:700,marginBottom:8}}>Rent<span style={{color:'var(--accent)'}}>Ease</span></div>
+        <h1 style={{fontSize:24,marginBottom:8}}>Welcome Back</h1>
+        <p style={{color:'var(--text2)',fontSize:14}}>Sign in to manage your rentals</p>
+      </div>
+      <div className="card">
+        <div style={{background:'rgba(232,160,69,0.08)',border:'1px solid rgba(232,160,69,0.2)',borderRadius:10,padding:'12px 16px',marginBottom:24,fontSize:13}}>
+          <div style={{fontWeight:600,marginBottom:6,color:'var(--accent)'}}>Demo Credentials</div>
+          <div style={{color:'var(--text2)'}}>Admin: <span style={{color:'var(--text)'}}>admin@rentease.com / password</span></div>
+        </div>
+        <form onSubmit={submit}>
+          <div className="form-group"><label className="form-label">Email</label><input type="email" placeholder="you@example.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} required/></div>
+          <div className="form-group"><label className="form-label">Password</label><input type="password" placeholder="••••••••" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} required/></div>
+          {err&&<div style={{color:'var(--error)',fontSize:13,marginBottom:16,padding:'10px 14px',background:'rgba(255,107,107,0.1)',borderRadius:8}}>{err}</div>}
+          <button type="submit" className="btn btn-primary" style={{width:'100%',marginTop:8}} disabled={loading}>{loading?'Signing in...':'Sign In →'}</button>
+        </form>
+        <div style={{textAlign:'center',marginTop:20,fontSize:14,color:'var(--text2)'}}>No account? <span onClick={()=>navigate('register')} style={{color:'var(--accent)',cursor:'pointer'}}>Create one</span></div>
+      </div>
+    </div>
+  </div>;
+}
+
+// ─── REGISTER ─────────────────────────────────────────────────────────────────
+function Register(){
+  const {register}=useAuth();const {navigate}=useNav();const {toast}=useToast();
+  const [form,setForm]=useState({name:'',email:'',password:'',phone:'',address:''});
+  const [err,setErr]=useState('');const [loading,setLoading]=useState(false);
+  const submit=(e)=>{e.preventDefault();setErr('');setLoading(true);
+    try{register(form);toast('Account created! Welcome! 🎉','success');navigate('dashboard');}
+    catch(e){setErr(e.message);}finally{setLoading(false);}
+  };
+  return <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',padding:'80px 24px'}}>
+    <div style={{width:'100%',maxWidth:440}}>
+      <div style={{textAlign:'center',marginBottom:36}}>
+        <div style={{fontFamily:'var(--font-display)',fontSize:28,fontWeight:700,marginBottom:8}}>Rent<span style={{color:'var(--accent)'}}>Ease</span></div>
+        <h1 style={{fontSize:24,marginBottom:8}}>Create Account</h1>
+      </div>
+      <div className="card">
+        <form onSubmit={submit}>
+          {[['Full Name','text','name','John Doe'],['Email','email','email','you@example.com'],['Password','password','password','Min 6 characters'],['Phone','tel','phone','Mobile number']].map(([l,t,k,ph])=>
+            <div key={k} className="form-group"><label className="form-label">{l}</label><input type={t} placeholder={ph} value={form[k]} onChange={e=>setForm({...form,[k]:e.target.value})} required={k!=='phone'} minLength={k==='password'?6:undefined}/></div>
+          )}
+          <div className="form-group"><label className="form-label">Address</label><textarea placeholder="Delivery address" value={form.address} rows={2} onChange={e=>setForm({...form,address:e.target.value})} style={{resize:'vertical'}}/></div>
+          {err&&<div style={{color:'var(--error)',fontSize:13,marginBottom:16,padding:'10px 14px',background:'rgba(255,107,107,0.1)',borderRadius:8}}>{err}</div>}
+          <button type="submit" className="btn btn-primary" style={{width:'100%',marginTop:8}} disabled={loading}>{loading?'Creating...':'Create Account →'}</button>
+        </form>
+        <div style={{textAlign:'center',marginTop:20,fontSize:14,color:'var(--text2)'}}>Have account? <span onClick={()=>navigate('login')} style={{color:'var(--accent)',cursor:'pointer'}}>Sign in</span></div>
+      </div>
+    </div>
+  </div>;
+}
+
+// ─── CART ─────────────────────────────────────────────────────────────────────
+function Cart(){
+  const {cart,removeFromCart,updateItem,getTotal}=useCart();
+  const {navigate}=useNav();const {toast}=useToast();
+  if(!cart.length) return <div className="page"><div className="container"><div className="empty-state"><span className="icon">🛒</span><h3>Cart is empty</h3><p>Browse products to add items</p><button className="btn btn-primary" style={{marginTop:24}} onClick={()=>navigate('products')}>Browse Products</button></div></div></div>;
+  const total=getTotal();
+  return <div className="page">
+    <div className="container">
+      <h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>Your Cart</h1>
+      <p style={{color:'var(--text2)',marginBottom:40}}>{cart.length} item{cart.length!==1?'s':''}</p>
+      <div className="checkout-grid" style={{display:'grid',gridTemplateColumns:'1fr 340px',gap:32,alignItems:'start'}}>
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          {cart.map(item=>!item.product?null:<div key={item.id} className="card" style={{display:'flex',gap:20,padding:20}}>
+            <img src={item.product.image} alt={item.product.name} style={{width:100,height:80,objectFit:'cover',borderRadius:10,flexShrink:0}}/>
+            <div style={{flex:1}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8}}>
+                <h3 style={{fontSize:15,fontWeight:600,fontFamily:'var(--font-body)'}}>{item.product.name}</h3>
+                <button onClick={()=>{removeFromCart(item.id);toast('Removed','success');}} style={{background:'none',border:'none',color:'var(--error)',cursor:'pointer',fontSize:18}}>✕</button>
+              </div>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <span style={{fontSize:13,color:'var(--text2)'}}>Duration:</span>
+                  <select value={item.tenure} onChange={e=>{updateItem(item.id,{tenure:parseInt(e.target.value)});toast('Updated','success');}} style={{width:'auto',padding:'6px 12px'}}>
+                    <option value={3}>3 Months</option><option value={6}>6 Months</option><option value={12}>12 Months</option>
+                  </select>
+                </div>
+                <div style={{textAlign:'right'}}><div style={{fontSize:18,fontWeight:700,color:'var(--accent)'}}>₹{item.product[`price${item.tenure}`]}/mo</div><div style={{fontSize:12,color:'var(--text2)'}}>₹{item.product[`price${item.tenure}`]*item.tenure} total</div></div>
+              </div>
+            </div>
+          </div>)}
+        </div>
+        <div className="card" style={{position:'sticky',top:90}}>
+          <h3 style={{marginBottom:20,fontFamily:'var(--font-body)'}}>Order Summary</h3>
+          {cart.map(i=>!i.product?null:<div key={i.id} style={{display:'flex',justifyContent:'space-between',fontSize:13,color:'var(--text2)',marginBottom:10}}><span style={{flex:1,paddingRight:8}}>{i.product.name}</span><span>₹{i.product[`price${i.tenure}`]} × {i.tenure}mo</span></div>)}
+          <hr className="divider"/>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:18,fontWeight:700,marginBottom:24}}><span>Total</span><span style={{color:'var(--accent)'}}>₹{total}</span></div>
+          <button className="btn btn-primary" style={{width:'100%',marginBottom:12}} onClick={()=>navigate('checkout')}>Proceed to Checkout →</button>
+          <button className="btn btn-outline" style={{width:'100%'}} onClick={()=>navigate('products')}>Continue Shopping</button>
+          <div style={{marginTop:20,display:'flex',flexDirection:'column',gap:8}}>
+            {['🚚 Free delivery & setup','🔧 Free maintenance','🔄 Easy return'].map(p=><div key={p} style={{fontSize:12,color:'var(--text2)'}}>{p}</div>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+// ─── CHECKOUT ─────────────────────────────────────────────────────────────────
+function Checkout(){
+  const {cart,getTotal,clearCart}=useCart();const {user}=useAuth();
+  const {navigate}=useNav();const {toast}=useToast();
+  const [form,setForm]=useState({deliveryAddress:user?.address||'',deliveryDate:''});
+  const [loading,setLoading]=useState(false);
+  if(!cart.length){navigate('cart');return null;}
+  const total=getTotal();
+  const submit=(e)=>{e.preventDefault();
+    setLoading(true);
+    const orderId=uid();
+    const items=cart.map(i=>({id:uid(),orderId,userId:user.id,productId:i.productId,product:i.product,tenure:i.tenure,monthlyPrice:i.product[`price${i.tenure}`],totalPrice:i.product[`price${i.tenure}`]*i.tenure,status:'active',startDate:new Date(),endDate:new Date(Date.now()+i.tenure*30*86400000),deliveryAddress:form.deliveryAddress,deliveryDate:form.deliveryDate,createdAt:new Date()}));
+    RENTALS.push(...items);
+    ORDERS.push({id:orderId,userId:user.id,items,deliveryAddress:form.deliveryAddress,deliveryDate:form.deliveryDate,totalAmount:total,status:'confirmed',createdAt:new Date()});
+    clearCart();
+    setTimeout(()=>{setLoading(false);toast('🎉 Order confirmed!','success');navigate('rentals');},800);
+  };
+  return <div className="page">
+    <div className="container">
+      <h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>Checkout</h1>
+      <p style={{color:'var(--text2)',marginBottom:40}}>Complete your rental order</p>
+      <div className="checkout-grid" style={{display:'grid',gridTemplateColumns:'1fr 340px',gap:32,alignItems:'start'}}>
+        <form onSubmit={submit}>
+          <div className="card" style={{marginBottom:24}}>
+            <h3 style={{marginBottom:20,fontFamily:'var(--font-body)'}}>Delivery Details</h3>
+            <div className="form-group"><label className="form-label">Delivery Address</label><textarea rows={3} placeholder="Full address with pincode" value={form.deliveryAddress} onChange={e=>setForm({...form,deliveryAddress:e.target.value})} required style={{resize:'vertical'}}/></div>
+            <div className="form-group"><label className="form-label">Preferred Delivery Date</label><input type="date" value={form.deliveryDate} min={new Date(Date.now()+86400000).toISOString().split('T')[0]} onChange={e=>setForm({...form,deliveryDate:e.target.value})} required/></div>
+          </div>
+          <div className="card" style={{marginBottom:24}}>
+            <h3 style={{marginBottom:16,fontFamily:'var(--font-body)'}}>Payment</h3>
+            {['UPI / Google Pay','Net Banking','Credit/Debit Card','Cash on Delivery'].map((m,i)=><label key={m} style={{display:'flex',alignItems:'center',gap:12,padding:'14px 16px',background:'var(--bg3)',borderRadius:10,cursor:'pointer',marginBottom:8,border:i===0?'1px solid var(--accent)':'1px solid transparent'}}><input type="radio" name="pay" defaultChecked={i===0} style={{width:'auto'}}/><span style={{fontSize:14}}>{m}</span></label>)}
+            <div style={{marginTop:12,padding:'12px 16px',background:'rgba(78,203,113,0.1)',border:'1px solid rgba(78,203,113,0.2)',borderRadius:10,fontSize:13,color:'var(--success)'}}>✅ Demo mode — no real payment</div>
+          </div>
+          <button type="submit" disabled={loading} className="btn btn-primary btn-lg" style={{width:'100%'}}>{loading?'Placing Order...':'✓ Confirm Order — ₹'+total}</button>
+        </form>
+        <div className="card" style={{position:'sticky',top:90}}>
+          <h3 style={{marginBottom:16,fontFamily:'var(--font-body)'}}>Order Summary</h3>
+          {cart.map(i=>!i.product?null:<div key={i.id} style={{marginBottom:14,paddingBottom:14,borderBottom:'1px solid var(--border)'}}>
+            <div style={{display:'flex',gap:10}}><img src={i.product.image} alt="" style={{width:50,height:40,objectFit:'cover',borderRadius:6,flexShrink:0}}/><div><div style={{fontSize:13,fontWeight:500}}>{i.product.name}</div><div style={{fontSize:12,color:'var(--text2)'}}>{i.tenure} mo × ₹{i.product[`price${i.tenure}`]}/mo</div></div></div>
+            <div style={{textAlign:'right',fontSize:13,fontWeight:600,marginTop:4}}>₹{i.product[`price${i.tenure}`]*i.tenure}</div>
+          </div>)}
+          <div style={{display:'flex',justifyContent:'space-between',fontWeight:700,fontSize:17}}><span>Total</span><span style={{color:'var(--accent)'}}>₹{total}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function Dashboard(){
+  const {user}=useAuth();const {navigate}=useNav();
+  const myRentals=RENTALS.filter(r=>r.userId===user?.id);
+  const myOrders=ORDERS.filter(o=>o.userId===user?.id);
+  const myMaint=MAINTENANCE.filter(m=>m.userId===user?.id);
+  const active=myRentals.filter(r=>r.status==='active');
+  const stats=[{l:'Active Rentals',v:active.length,i:'📦',c:'var(--accent)'},{l:'Total Orders',v:myOrders.length,i:'🛒',c:'var(--success)'},{l:'Support Tickets',v:myMaint.filter(m=>m.status==='open').length,i:'🔧',c:'var(--warning)'},{l:'Total Spent',v:'₹'+myRentals.reduce((s,r)=>s+(r.totalPrice||0),0).toLocaleString(),i:'💰',c:'#6c8eff'}];
+  return <div className="page">
+    <div className="container">
+      <h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>Welcome, {user?.name?.split(' ')[0]}! 👋</h1>
+      <p style={{color:'var(--text2)',marginBottom:40}}>Overview of your rentals</p>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:20,marginBottom:40}}>
+        {stats.map(s=><div key={s.l} className="card" style={{display:'flex',alignItems:'center',gap:16}}><div style={{width:52,height:52,borderRadius:14,background:`${s.c}18`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,flexShrink:0}}>{s.i}</div><div><div style={{fontSize:24,fontWeight:700,color:s.c}}>{s.v}</div><div style={{fontSize:13,color:'var(--text2)'}}>{s.l}</div></div></div>)}
+      </div>
+      <div className="card" style={{marginBottom:32}}>
+        <h3 style={{fontFamily:'var(--font-body)',marginBottom:16}}>Quick Actions</h3>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+          <button className="btn btn-primary" onClick={()=>navigate('products')}>🛋️ Browse Products</button>
+          <button className="btn btn-outline" onClick={()=>navigate('rentals')}>📦 My Rentals</button>
+          <button className="btn btn-outline" onClick={()=>navigate('maintenance')}>🔧 Request Support</button>
+        </div>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24}}>
+        <div className="card">
+          <h3 style={{fontFamily:'var(--font-body)',marginBottom:16}}>Active Rentals</h3>
+          {active.length===0?<div style={{textAlign:'center',padding:'24px 0',color:'var(--text2)'}}><div style={{fontSize:36}}>📦</div><p style={{fontSize:14,marginTop:8}}>No active rentals</p><button className="btn btn-primary btn-sm" style={{marginTop:12}} onClick={()=>navigate('products')}>Start Renting</button></div>
+          :<div style={{display:'flex',flexDirection:'column',gap:10}}>
+            {active.slice(0,3).map(r=><div key={r.id} style={{display:'flex',gap:10,alignItems:'center',padding:'10px 14px',background:'var(--bg3)',borderRadius:10}}>
+              {r.product?.image&&<img src={r.product.image} alt="" style={{width:44,height:36,objectFit:'cover',borderRadius:6,flexShrink:0}}/>}
+              <div style={{flex:1,minWidth:0}}><div style={{fontSize:13,fontWeight:500,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{r.product?.name}</div><div style={{fontSize:12,color:'var(--text2)'}}>₹{r.monthlyPrice}/mo</div></div>
+              <span className="badge badge-success" style={{fontSize:11}}>Active</span>
+            </div>)}
+          </div>}
+        </div>
+        <div className="card">
+          <h3 style={{fontFamily:'var(--font-body)',marginBottom:16}}>Recent Orders</h3>
+          {myOrders.length===0?<div style={{textAlign:'center',padding:'24px 0',color:'var(--text2)'}}><div style={{fontSize:36}}>🛒</div><p style={{fontSize:14,marginTop:8}}>No orders yet</p></div>
+          :<div style={{display:'flex',flexDirection:'column',gap:10}}>
+            {myOrders.slice(0,3).map(o=><div key={o.id} style={{padding:'10px 14px',background:'var(--bg3)',borderRadius:10}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span style={{fontSize:13,fontWeight:500}}>#{o.id.slice(0,8)}</span><span className={`badge ${o.status==='confirmed'?'badge-success':'badge-neutral'}`} style={{fontSize:11}}>{o.status}</span></div>
+              <div style={{fontSize:12,color:'var(--text2)'}}>₹{o.totalAmount?.toLocaleString()}</div>
+            </div>)}
+          </div>}
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+// ─── RENTALS PAGE ─────────────────────────────────────────────────────────────
+function Rentals(){
+  const {user}=useAuth();const {navigate}=useNav();const {toast}=useToast();
+  const [tab,setTab]=useState('active');
+  const [,forceUpdate]=useState(0);
+  const myRentals=RENTALS.filter(r=>r.userId===user?.id);
+  const filtered=myRentals.filter(r=>tab==='active'?r.status==='active':r.status!=='active');
+  const schedulePickup=(id)=>{const date=prompt('Enter pickup date (YYYY-MM-DD):');if(!date)return;const r=RENTALS.find(x=>x.id===id);if(r){r.pickupDate=date;r.status='pickup_scheduled';forceUpdate(n=>n+1);toast('Pickup scheduled!','success');}};
+  const sc={active:'badge-success',pickup_scheduled:'badge-warning',completed:'badge-neutral',cancelled:'badge-error'};
+  return <div className="page">
+    <div className="container">
+      <h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>My Rentals</h1>
+      <p style={{color:'var(--text2)',marginBottom:40}}>Track all your rental items</p>
+      <div style={{display:'flex',gap:4,marginBottom:32,background:'var(--bg3)',borderRadius:12,padding:4,width:'fit-content'}}>
+        {[['active','Active'],['history','History']].map(([v,l])=><button key={v} onClick={()=>setTab(v)} style={{padding:'8px 20px',borderRadius:10,border:'none',cursor:'pointer',fontSize:14,fontWeight:500,background:tab===v?'var(--card)':'transparent',color:tab===v?'var(--text)':'var(--text2)',transition:'all 0.2s'}}>{l} ({myRentals.filter(r=>v==='active'?r.status==='active':r.status!=='active').length})</button>)}
+      </div>
+      {filtered.length===0?<div className="empty-state"><span className="icon">📦</span><h3>{tab==='active'?'No active rentals':'No history'}</h3><p>{tab==='active'?'Browse to rent your first item!':'Completed rentals appear here.'}</p>{tab==='active'&&<button className="btn btn-primary" style={{marginTop:24}} onClick={()=>navigate('products')}>Browse Products</button>}</div>
+      :<div style={{display:'flex',flexDirection:'column',gap:16}}>
+        {filtered.map(r=><div key={r.id} className="card" style={{display:'flex',gap:20,flexWrap:'wrap'}}>
+          {r.product?.image&&<img src={r.product.image} alt="" style={{width:120,height:90,objectFit:'cover',borderRadius:10,flexShrink:0}}/>}
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8,flexWrap:'wrap',gap:8}}>
+              <h3 style={{fontSize:16,fontFamily:'var(--font-body)',fontWeight:600}}>{r.product?.name||'Product'}</h3>
+              <span className={`badge ${sc[r.status]||'badge-neutral'}`}>{r.status?.replace('_',' ')}</span>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))',gap:8,marginBottom:12}}>
+              {[['Duration',r.tenure+' months'],['Monthly','₹'+r.monthlyPrice],['Total','₹'+r.totalPrice],['End Date',r.endDate?new Date(r.endDate).toLocaleDateString('en-IN'):'—']].map(([l,v])=><div key={l} style={{fontSize:12}}><div style={{color:'var(--text3)',textTransform:'uppercase',letterSpacing:0.4,fontSize:10}}>{l}</div><div style={{fontWeight:500}}>{v}</div></div>)}
+            </div>
+            {r.status==='active'&&<div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+              <button className="btn btn-outline btn-sm" onClick={()=>navigate('maintenance')}>🔧 Support</button>
+              <button className="btn btn-outline btn-sm" onClick={()=>schedulePickup(r.id)}>📅 Schedule Pickup</button>
+            </div>}
+          </div>
+        </div>)}
+      </div>}
+    </div>
+  </div>;
+}
+
+// ─── MAINTENANCE ──────────────────────────────────────────────────────────────
+function Maintenance(){
+  const {user}=useAuth();
+  const [show,setShow]=useState(false);
+  const [form,setForm]=useState({rentalId:'',issue:'',description:''});
+  const [,forceUpdate]=useState(0);
+  const {toast}=useToast();
+  const myRentals=RENTALS.filter(r=>r.userId===user?.id&&r.status==='active');
+  const myMaint=MAINTENANCE.filter(m=>m.userId===user?.id);
+  const sc={open:'badge-warning',in_progress:'badge-accent',resolved:'badge-success',closed:'badge-neutral'};
+  const submit=(e)=>{e.preventDefault();MAINTENANCE.push({id:uid(),userId:user.id,...form,status:'open',createdAt:new Date()});setShow(false);setForm({rentalId:'',issue:'',description:''});toast('Support request submitted!','success');forceUpdate(n=>n+1);};
+  return <div className="page">
+    <div className="container">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:40,flexWrap:'wrap',gap:16}}>
+        <div><h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>Maintenance & Support</h1><p style={{color:'var(--text2)'}}>Report issues with rented items</p></div>
+        <button className="btn btn-primary" onClick={()=>setShow(!show)}>{show?'✕ Cancel':'+ New Request'}</button>
+      </div>
+      {show&&<div className="card" style={{marginBottom:32,borderColor:'rgba(232,160,69,0.3)'}}>
+        <h3 style={{fontFamily:'var(--font-body)',marginBottom:20}}>Submit Request</h3>
+        <form onSubmit={submit}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+            <div className="form-group"><label className="form-label">Select Item</label><select value={form.rentalId} onChange={e=>setForm({...form,rentalId:e.target.value})} required><option value="">Select rental...</option>{myRentals.map(r=><option key={r.id} value={r.id}>{r.product?.name}</option>)}</select></div>
+            <div className="form-group"><label className="form-label">Issue Type</label><select value={form.issue} onChange={e=>setForm({...form,issue:e.target.value})} required><option value="">Select...</option>{['Not working','Damaged','Noisy','Installation problem','Replacement needed','Other'].map(i=><option key={i}>{i}</option>)}</select></div>
+          </div>
+          <div className="form-group"><label className="form-label">Description</label><textarea rows={4} placeholder="Describe the issue..." value={form.description} onChange={e=>setForm({...form,description:e.target.value})} required style={{resize:'vertical'}}/></div>
+          <button type="submit" className="btn btn-primary">✓ Submit Request</button>
+        </form>
+      </div>}
+      {myMaint.length===0?<div className="empty-state"><span className="icon">🔧</span><h3>No requests</h3><p>Submit a request if you need help with any item.</p></div>
+      :<div style={{display:'flex',flexDirection:'column',gap:16}}>
+        {myMaint.map(r=><div key={r.id} className="card">
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12,flexWrap:'wrap',gap:8}}>
+            <div><h3 style={{fontSize:16,fontFamily:'var(--font-body)',fontWeight:600,marginBottom:4}}>{r.issue}</h3><div style={{fontSize:13,color:'var(--text2)'}}>Ticket #{r.id.slice(0,8)}</div></div>
+            <span className={`badge ${sc[r.status]||'badge-neutral'}`}>{r.status}</span>
+          </div>
+          <p style={{fontSize:14,color:'var(--text2)',lineHeight:1.6}}>{r.description}</p>
+          <div style={{fontSize:12,color:'var(--text3)',marginTop:10}}>Submitted: {new Date(r.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+        </div>)}
+      </div>}
+    </div>
+  </div>;
+}
+
+// ─── ADMIN PAGES ──────────────────────────────────────────────────────────────
+function AdminDashboard(){
+  const {navigate}=useNav();
+  const stats=[{l:'Users',v:USERS.filter(u=>u.role!=='admin').length,i:'👥',c:'#6c8eff'},{l:'Products',v:prodList.length,i:'📦',c:'var(--accent)'},{l:'Orders',v:ORDERS.length,i:'🛒',c:'var(--success)'},{l:'Active Rentals',v:RENTALS.filter(r=>r.status==='active').length,i:'✅',c:'#4ecb71'},{l:'Support Tickets',v:MAINTENANCE.filter(m=>m.status==='open').length,i:'🔧',c:'var(--warning)'},{l:'Revenue',v:'₹'+RENTALS.reduce((s,r)=>s+(r.totalPrice||0),0).toLocaleString(),i:'💰',c:'#ff7eb3'}];
+  return <div className="page">
+    <div className="container">
+      <h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>Admin Dashboard</h1>
+      <p style={{color:'var(--text2)',marginBottom:40}}>Manage your RentEase platform</p>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:20,marginBottom:40}}>
+        {stats.map(s=><div key={s.l} className="card" style={{display:'flex',alignItems:'center',gap:16}}><div style={{width:52,height:52,borderRadius:14,background:`${s.c}18`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,flexShrink:0}}>{s.i}</div><div><div style={{fontSize:26,fontWeight:700,color:s.c}}>{s.v}</div><div style={{fontSize:13,color:'var(--text2)'}}>{s.l}</div></div></div>)}
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:16}}>
+        {[{to:'admin-products',i:'📦',l:'Manage Products',d:'Add, edit, remove products'},{to:'admin-orders',i:'🛒',l:'Manage Orders',d:'View and update all orders'},{to:'admin-rentals',i:'✅',l:'Manage Rentals',d:'Track active rentals'}].map(item=><div key={item.to} className="card" style={{cursor:'pointer',transition:'border-color 0.2s'}} onClick={()=>navigate(item.to)} onMouseEnter={e=>e.currentTarget.style.borderColor='var(--accent)'} onMouseLeave={e=>e.currentTarget.style.borderColor='var(--border)'}><div style={{fontSize:36,marginBottom:12}}>{item.i}</div><h3 style={{fontFamily:'var(--font-body)',fontSize:16,marginBottom:6}}>{item.l}</h3><p style={{color:'var(--text2)',fontSize:13}}>{item.d}</p></div>)}
+      </div>
+    </div>
+  </div>;
+}
+
+function AdminProducts(){
+  const {toast}=useToast();
+  const [,forceUpdate]=useState(0);
+  const [edit,setEdit]=useState(null);
+  const blank={name:'',category:'Furniture',description:'',image:'',price3:'',price6:'',price12:'',deposit:''};
+  const [form,setForm]=useState(blank);
+  const [show,setShow]=useState(false);
+  const startEdit=(p)=>{setForm(p);setEdit(p.id);setShow(true);};
+  const startNew=()=>{setForm(blank);setEdit(null);setShow(true);};
+  const save=(e)=>{e.preventDefault();
+    if(edit){const idx=prodList.findIndex(p=>p.id===edit);if(idx>-1)prodList[idx]={...prodList[idx],...form};toast('Updated','success');}
+    else{prodList.push({id:uid(),...form,available:true,featured:false,rating:0,reviews:0});toast('Product added','success');}
+    setShow(false);setEdit(null);setForm(blank);forceUpdate(n=>n+1);
+  };
+  const del=(id)=>{if(!window.confirm('Delete?'))return;const idx=prodList.findIndex(p=>p.id===id);if(idx>-1)prodList.splice(idx,1);toast('Deleted','success');forceUpdate(n=>n+1);};
+  return <div className="page">
+    <div className="container">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:32,flexWrap:'wrap',gap:16}}>
+        <div><h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>Products</h1><p style={{color:'var(--text2)'}}>Manage your rental inventory ({prodList.length} items)</p></div>
+        <button className="btn btn-primary" onClick={startNew}>+ Add Product</button>
+      </div>
+      {show&&<div className="card" style={{marginBottom:32,borderColor:'rgba(232,160,69,0.3)'}}>
+        <h3 style={{fontFamily:'var(--font-body)',marginBottom:20}}>{edit?'Edit':'Add'} Product</h3>
+        <form onSubmit={save}>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+            <div className="form-group"><label className="form-label">Name</label><input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} required/></div>
+            <div className="form-group"><label className="form-label">Category</label><select value={form.category} onChange={e=>setForm({...form,category:e.target.value})}>{['Furniture','Appliances','Electronics'].map(c=><option key={c}>{c}</option>)}</select></div>
+            <div className="form-group" style={{gridColumn:'1/-1'}}><label className="form-label">Description</label><textarea rows={2} value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></div>
+            <div className="form-group" style={{gridColumn:'1/-1'}}><label className="form-label">Image URL</label><input value={form.image} onChange={e=>setForm({...form,image:e.target.value})}/></div>
+            {[['price3','3mo Price'],['price6','6mo Price'],['price12','12mo Price'],['deposit','Deposit']].map(([k,l])=><div key={k} className="form-group"><label className="form-label">{l} (₹)</label><input type="number" value={form[k]} onChange={e=>setForm({...form,[k]:+e.target.value})} required/></div>)}
+          </div>
+          <div style={{display:'flex',gap:12,marginTop:8}}>
+            <button type="submit" className="btn btn-primary">Save</button>
+            <button type="button" className="btn btn-outline" onClick={()=>setShow(false)}>Cancel</button>
+          </div>
+        </form>
+      </div>}
+      <div style={{overflowX:'auto'}}>
+        <table style={{width:'100%',borderCollapse:'collapse'}}>
+          <thead><tr style={{borderBottom:'1px solid var(--border)'}}>
+            {['Product','Category','3mo','6mo','12mo','Deposit','Actions'].map(h=><th key={h} style={{textAlign:'left',padding:'12px 16px',fontSize:11,color:'var(--text2)',textTransform:'uppercase',letterSpacing:0.5,fontWeight:500}}>{h}</th>)}
+          </tr></thead>
+          <tbody>{prodList.map(p=><tr key={p.id} style={{borderBottom:'1px solid var(--border)',transition:'background 0.2s'}} onMouseEnter={e=>e.currentTarget.style.background='var(--bg3)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+            <td style={{padding:'14px 16px'}}><div style={{display:'flex',alignItems:'center',gap:10}}><img src={p.image} alt="" style={{width:40,height:32,objectFit:'cover',borderRadius:6}}/><span style={{fontSize:14,fontWeight:500}}>{p.name}</span></div></td>
+            <td style={{padding:'14px 16px'}}><span className="badge badge-accent">{p.category}</span></td>
+            <td style={{padding:'14px 16px',fontSize:14}}>₹{p.price3}</td>
+            <td style={{padding:'14px 16px',fontSize:14}}>₹{p.price6}</td>
+            <td style={{padding:'14px 16px',fontSize:14}}>₹{p.price12}</td>
+            <td style={{padding:'14px 16px',fontSize:14}}>₹{p.deposit}</td>
+            <td style={{padding:'14px 16px'}}><div style={{display:'flex',gap:8}}><button onClick={()=>startEdit(p)} className="btn btn-outline btn-sm">Edit</button><button onClick={()=>del(p.id)} className="btn btn-danger btn-sm">Delete</button></div></td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>;
+}
+
+function AdminOrders(){
+  const {toast}=useToast();const [,forceUpdate]=useState(0);
+  const sc={confirmed:'badge-success',processing:'badge-warning',delivered:'badge-accent',cancelled:'badge-error'};
+  const updateStatus=(id,status)=>{const o=ORDERS.find(x=>x.id===id);if(o){o.status=status;forceUpdate(n=>n+1);toast('Updated','success');}};
+  return <div className="page">
+    <div className="container">
+      <h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>Orders</h1>
+      <p style={{color:'var(--text2)',marginBottom:40}}>All customer orders ({ORDERS.length})</p>
+      {ORDERS.length===0?<div className="empty-state"><span className="icon">🛒</span><h3>No orders yet</h3></div>
+      :<div style={{display:'flex',flexDirection:'column',gap:16}}>
+        {ORDERS.map(o=><div key={o.id} className="card">
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:14,flexWrap:'wrap',gap:8}}>
+            <div><div style={{fontWeight:600,fontSize:15,marginBottom:4}}>#{o.id.slice(0,12)}</div><div style={{fontSize:13,color:'var(--text2)'}}>{new Date(o.createdAt).toLocaleDateString('en-IN')}</div></div>
+            <div style={{display:'flex',gap:10,alignItems:'center'}}><span style={{fontSize:18,fontWeight:700,color:'var(--accent)'}}>₹{o.totalAmount?.toLocaleString()}</span><span className={`badge ${sc[o.status]||'badge-neutral'}`}>{o.status}</span></div>
+          </div>
+          <div style={{fontSize:13,color:'var(--text2)',marginBottom:14}}>📍 {o.deliveryAddress} &nbsp;·&nbsp; {o.items?.length||0} item(s)</div>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+            {['confirmed','processing','delivered','cancelled'].map(s=><button key={s} onClick={()=>updateStatus(o.id,s)} className={`btn btn-sm ${o.status===s?'btn-primary':'btn-outline'}`} style={{textTransform:'capitalize'}}>{s}</button>)}
+          </div>
+        </div>)}
+      </div>}
+    </div>
+  </div>;
+}
+
+function AdminRentals(){
+  const {toast}=useToast();const [,forceUpdate]=useState(0);
+  const sc={active:'badge-success',pickup_scheduled:'badge-warning',completed:'badge-neutral',cancelled:'badge-error'};
+  const updateStatus=(id,status)=>{const r=RENTALS.find(x=>x.id===id);if(r){r.status=status;forceUpdate(n=>n+1);toast('Updated','success');}};
+  return <div className="page">
+    <div className="container">
+      <h1 style={{fontSize:'clamp(28px,5vw,48px)',marginBottom:8}}>Rentals</h1>
+      <p style={{color:'var(--text2)',marginBottom:40}}>All rentals ({RENTALS.length})</p>
+      {RENTALS.length===0?<div className="empty-state"><span className="icon">📦</span><h3>No rentals yet</h3></div>
+      :<div style={{display:'flex',flexDirection:'column',gap:16}}>
+        {RENTALS.map(r=><div key={r.id} className="card">
+          <div style={{display:'flex',gap:16,flexWrap:'wrap'}}>
+            {r.product?.image&&<img src={r.product.image} alt="" style={{width:80,height:64,objectFit:'cover',borderRadius:8,flexShrink:0}}/>}
+            <div style={{flex:1}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8,flexWrap:'wrap',gap:8}}>
+                <div><div style={{fontWeight:600,fontSize:15}}>{r.product?.name||'Product'}</div><div style={{fontSize:12,color:'var(--text2)',marginTop:2}}>{r.id.slice(0,12)}</div></div>
+                <span className={`badge ${sc[r.status]||'badge-neutral'}`}>{r.status?.replace('_',' ')}</span>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(120px,1fr))',gap:8,marginBottom:12}}>
+                {[['Monthly','₹'+r.monthlyPrice],['Tenure',r.tenure+' mo'],['Total','₹'+r.totalPrice]].map(([l,v])=><div key={l} style={{fontSize:12}}><div style={{color:'var(--text3)',fontSize:10,textTransform:'uppercase',letterSpacing:0.4}}>{l}</div><div style={{fontWeight:500}}>{v}</div></div>)}
+              </div>
+              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                {['active','completed','cancelled'].map(s=><button key={s} onClick={()=>updateStatus(r.id,s)} className={`btn btn-sm ${r.status===s?'btn-primary':'btn-outline'}`} style={{textTransform:'capitalize'}}>{s}</button>)}
+              </div>
+            </div>
+          </div>
+        </div>)}
+      </div>}
+    </div>
+  </div>;
+}
+
+// ─── ROUTER / APP ─────────────────────────────────────────────────────────────
+function App(){
+  const [page,setPage]=useState('home');
+  const [params,setParams]=useState({});
+  const {toast}=useToast();
+
+  const navigate=(p,par={})=>{setPage(p);setParams(par||{});window.scrollTo(0,0);};
+  
+  // Simple auth guard wrapper
+  const AuthRequired=({children})=>{
+    const {user}=useAuth();
+    useEffect(()=>{if(!user){toast('Please login first','error');navigate('login');}});
+    return user?children:null;
+  };
+  const AdminRequired=({children})=>{
+    const {user,isAdmin}=useAuth();
+    useEffect(()=>{if(!user){toast('Please login','error');navigate('login');}else if(!isAdmin){toast('Admin access only','error');navigate('home');}});
+    return (user&&isAdmin)?children:null;
+  };
+
+  const pages={
+    home:<Home/>,
+    products:<Products params={params}/>,
+    product:<ProductDetail params={params}/>,
+    login:<Login/>,
+    register:<Register/>,
+    cart:<AuthRequired><Cart/></AuthRequired>,
+    checkout:<AuthRequired><Checkout/></AuthRequired>,
+    dashboard:<AuthRequired><Dashboard/></AuthRequired>,
+    rentals:<AuthRequired><Rentals/></AuthRequired>,
+    maintenance:<AuthRequired><Maintenance/></AuthRequired>,
+    admin:<AdminRequired><AdminDashboard/></AdminRequired>,
+    'admin-products':<AdminRequired><AdminProducts/></AdminRequired>,
+    'admin-orders':<AdminRequired><AdminOrders/></AdminRequired>,
+    'admin-rentals':<AdminRequired><AdminRentals/></AdminRequired>,
+  };
+
+  return <NavCtx.Provider value={{navigate,page}}>
+    <Navbar/>
+    <main>{pages[page]||<Home/>}</main>
+    <Footer/>
+  </NavCtx.Provider>;
+}
+
+function Root(){
+  return <ToastProvider><AuthProvider><CartProvider><App/></CartProvider></AuthProvider></ToastProvider>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Root/>);
+</script>
+</body>
+</html>
